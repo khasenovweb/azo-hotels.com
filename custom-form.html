@@ -1,0 +1,166 @@
+[contact-form-7 id="2617" title="Вступить в АЗО-описание"]
+
+<!-- Кастомная форма на странице https://azo-hotels.com/o-nas/vstupit-v-azo/ -->
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"
+    integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous">
+    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+
+<form class="join_azo_form" action="" data-validate='join_azo'>
+    <div class="join_azo_form__input">
+        <input class="uk-input uk-margin-small-bottom uk-form-width-large" type="text" name="name"
+            placeholder="Ваше имя">
+    </div>
+    <div class="join_azo_form__input">
+        <input class="uk-input uk-margin-small-bottom uk-form-width-large" type="text" name="otel_name"
+            placeholder="Название отеля и регион">
+    </div>
+    <div class="join_azo_form__input">
+        <input class="uk-input uk-margin-small-bottom uk-form-width-large" type="text" name="role"
+            placeholder="Должность">
+    </div>
+    <div class="join_azo_form__input">
+        <input class="uk-input uk-margin-small-bottom uk-form-width-large" type="text" name="email"
+            placeholder="E-mail">
+    </div>
+    <div class="join_azo_form__input">
+        <input class="uk-input uk-margin-small-bottom uk-form-width-large" type="text" name="phone"
+            placeholder="Телефон">
+    </div>
+
+    <p class="uk-margin-remove-bottom">Нужен ли вам «Дополнительный пакет отельера», который включает:</p>
+    <ul class="uk-list uk-list-bullet">
+        <li>Сертификат члена АЗО;</li>
+        <li>Возможность обращаться и делать запросы в государственные органы от имени Ассоциации, а также участвовать в
+            обращении и отстаивании интересов отельеров перед органами государственной власти (в том числе услуги
+            юристов);</li>
+        <li>Доступ к обширной базе знаний отельера, которая постоянно обновляется.</li>
+    </ul>
+
+    <div style="display: flex;">
+        <label for="dop1">
+            <input type="radio" name="dop" id="dop1" value="да" checked>
+            <span>Да</span>
+        </label>
+        <label for="dop2">
+            <input type="radio" name="dop" id="dop2" value="нет">
+            <span>Нет</span>
+        </label>
+    </div>
+    <p>
+        <button class="btn uk-button uk-button-primary uk-button-large">Отправить</button>
+    </p>
+</form>
+
+<style>
+    .join_azo_form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .join_azo_form__input {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .join_azo_form__input label.error {
+        color: #e2474c;
+        font-size: 14px;
+        margin-top: -8px;
+        margin-bottom: 10px;
+    }
+
+    .join_azo_form__input input.error {
+        background-color: #e2474c21;
+    }
+
+    .btn.load {
+        position: relative;
+    }
+
+    .btn.load::before {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-color: #e2474c;
+        border-radius: 5rem;
+    }
+
+    .btn.load::after {
+        content: '';
+        display: block;
+        width: 25px;
+        height: 25px;
+        border-radius: 100%;
+        border: 2px solid white;
+        border-right-color: transparent;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        animation: rotate linear infinite 1s;
+    }
+
+    @keyframes rotate {
+        0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
+</style>
+
+
+<script>
+    $.validator.addMethod(
+        "phone",
+        function (value) {
+            return value.replace(/\D+/g, "").length >= 11;
+        },
+        "Введите номер телефона полностью"
+    );
+
+    $("form[data-validate='join_azo']").each(function (i, el) {
+        $(el).validate({
+            rules: {
+                phone: "phone",
+                name: {
+                    required: true,
+                },
+                email: {
+                    required: true,
+                },
+            },
+            messages: {
+                name: {
+                    required: "Введите ваше имя",
+                },
+                email: {
+                    required: "Введите E-mail",
+                },
+            },
+            submitHandler: function (form) {
+                var data = $(form).serialize();
+                $.ajax({
+                    url: "https://api.risoma.ru/azo_hotels_com_send_email/",
+                    type: "post",
+                    data: data,
+                    beforeSend: function () {
+                        $(form).find(".btn").addClass("load");
+                    },
+                    success: function () {
+                        $(form).find(".btn").removeClass("load");
+                        // alert('Отправлено');
+                        document.location.href = 'https://azo-hotels.com/zayavka-otpravlena/';
+                    },
+                });
+            },
+        });
+    });
+</script>
